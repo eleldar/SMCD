@@ -46,35 +46,13 @@ from browser open adress 127.0.0.1:5000/api
 .
 ├── api
 │   ├── main.py
-│   ├── __init__.py
-│   ├── models
-│   │   └── ru
-│   │       ├── am
-│   │       │   ├── final.mdl
-│   │       │   └── tree
-│   │       ├── conf
-│   │       │   ├── mfcc.conf
-│   │       │   └── model.conf
-│   │       ├── graph
-│   │       │   ├── disambig_tid.int
-│   │       │   ├── Gr.fst
-│   │       │   ├── HCLr.fst
-│   │       │   ├── phones
-│   │       │   │   └── word_boundary.int
-│   │       │   ├── phones.txt
-│   │       │   └── words.txt
-│   │       ├── ivector
-│   │       │   ├── final.dubm
-│   │       │   ├── final.ie
-│   │       │   ├── final.mat
-│   │       │   ├── global_cmvn.stats
-│   │       │   ├── online_cmvn.conf
-│   │       │   └── splice.conf
-│   │       └── README
 │   ├── tempfiles
 │   │   ├── src
 │   │   └── tgt
 │   └── tools
+│       ├── models
+│       │   └── ru
+│       │       └── /
 │       ├── recognitions.py
 │       ├── handler.py
 │       ├── manager.py
@@ -83,5 +61,7 @@ from browser open adress 127.0.0.1:5000/api
 ├── tests
 │   └── functional_test.py
 ├── README.md
+├── venv 
+│   └── /
 └── requirements.txt
 ```
