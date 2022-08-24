@@ -3,8 +3,8 @@ import os
 import sys
 from vosk import Model, KaldiRecognizer, SetLogLevel
 from pathlib import Path
-import subprocess
 import csv 
+import wave
 
 # cirrent paths for different OS
 drive, path_and_file = os.path.splitdrive(Path(__file__).absolute())
@@ -13,7 +13,6 @@ curdir = os.path.join(drive, path)
 
 # import tools
 sys.path.append(curdir)
-from tools.preprocess import video_decoder
 from tools.postprocess import get_dicts_list 
 
 
@@ -60,13 +59,6 @@ def read_data(data_file):
 
 def recognize(file_path, language='ru'):
     '''giperparameters, recognize, save, read and split text file'''
-    sample_rate = 16000
-    model = models[language]
-    rec = KaldiRecognizer(model, sample_rate)
-    rec.SetWords(True)
-    rec.SetPartialWords(True)
-    process = video_decoder(file_path, sample_rate) 
-
     # recognize and save to csv file
     drive, path_and_file = os.path.splitdrive(Path(__file__).absolute())
     path, file = os.path.split(path_and_file)
@@ -78,8 +70,17 @@ def recognize(file_path, language='ru'):
     headers = ["word", "start", "end", "conf"]
     make_data_file(data_file, headers)
 
+    wf = wave.open(file_path, "rb")
+    if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
+        print ("Audio file must be WAV format mono PCM.")
+        exit (1)
+    model = models[language]
+    rec = KaldiRecognizer(model, wf.getframerate())
+    rec.SetWords(True)
+    rec.SetPartialWords(True)
+
     while True:
-        frame = process.stdout.read(4000)
+        frame = wf.readframes(4000)
         if len(frame) == 0:
             break
         if rec.AcceptWaveform(frame):

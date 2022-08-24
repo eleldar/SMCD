@@ -7,32 +7,26 @@ from recognitions import recognize, read_data
 from tools.postprocess import target_format, get_dicts_list
 from time import time
 from datetime import timedelta
+from pydub import AudioSegment
+import soundfile as sf
+
 
 # cirrent paths for different OS
 drive, path_and_file = os.path.splitdrive(Path(__file__).absolute())
 path, file = os.path.split(path_and_file)
 curdir = os.path.join(drive, path)
 
-def get_file_info(filetype):
-    '''file info from filetype.guess method'''
-    if filetype.split('/')[0] == 'video':
-        with mp.VideoFileClip(file) as f:
-            return {
-                'fps': f.fps, 'filename': f.filename,
-                'aspect_ratio': f.aspect_ratio, 'duration': f.duration,
-                'end': f.end, 'hight': f.h, 'rotation': f.rotation,
-                'size': f.size, 'start': f.start, 'weight': f.w
-            }
-    elif self.file_info['filetype'].split('/')[0] == 'audio':
-        with mp.AudioFileClip(file) as f:
-            return {
-                'buffersize': f.buffersize, 'duration': f.duration, 
-                'end': f.end, 'fps': f.fps, 'nchannels': f.nchannels,
-                'start': f.start
-            }
-    return None
-
-
+mimes = {
+    'audio/aac': 'aac',
+    'audio/midi': 'mid', 
+    'audio/mpeg': 'mp3', 
+    'audio/mp4': 'm4a', 
+    'audio/ogg': 'ogg', 
+    'audio/x-flac': 'flac', 
+    'audio/x-wav': 'wav', 
+    'audio/amr': 'amr', 
+    'audio/x-aiff': 'aiff' 
+}
 
 class Handler():
     def __init__(self, data_file=None):
@@ -48,6 +42,22 @@ class Handler():
             pool.makeActive(th_name)
             start = time()
             self.file_info['filetype'] = ft.guess(file).mime if ft.guess(file) else None       
+
+
+            # need refactoring
+            sound = AudioSegment.from_file(file)
+            sound = sound.set_channels(1)
+            
+            inx = file.rfind('.')
+            tmp = file[:inx]
+            file = f"{''.join(tmp)}.wav"
+            try:
+                sound.export(file, format="wav") # wave.Error: file does not start with RIFF id
+            except:
+                pass 
+
+            # ****************
+
             self.file_info['data_file'] = recognize(file)
             self.times['time'] = str(timedelta(seconds = time() - start))
             print(
