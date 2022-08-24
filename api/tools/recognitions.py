@@ -14,14 +14,14 @@ curdir = os.path.join(drive, path)
 # import tools
 sys.path.append(curdir)
 from tools.preprocess import video_decoder
-from tools.postprocess import vtt_format, get_dicts_list 
+from tools.postprocess import get_dicts_list 
 
 
 # models init
 models_path = os.path.join(curdir, 'models')
 SetLogLevel(-1) # keep init message
 models = {
-    'en': Model(os.path.join(models_path, 'en')),
+    'ru': Model(os.path.join(models_path, 'ru')),
 }
 
 
@@ -58,7 +58,7 @@ def read_data(data_file):
         return
 
 
-def recognize(file_path, language='en'):
+def recognize(file_path, language='ru'):
     '''giperparameters, recognize, save, read and split text file'''
     sample_rate = 16000
     model = models[language]

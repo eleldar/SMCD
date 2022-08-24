@@ -4,7 +4,7 @@ from pathlib import Path
 import filetype as ft
 import moviepy.editor as mp
 from recognitions import recognize, read_data
-from tools.postprocess import vtt_format, get_dicts_list
+from tools.postprocess import target_format, get_dicts_list
 from time import time
 from datetime import timedelta
 
@@ -61,6 +61,6 @@ class Handler():
     def get_result(self):
         '''baseline'''
         data_file = self.file_info['data_file']
-        return vtt_format(read_data(data_file))
+        return target_format(read_data(data_file))
 
 
