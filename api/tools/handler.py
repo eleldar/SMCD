@@ -8,7 +8,6 @@ from tools.postprocess import target_format, get_dicts_list
 from time import time
 from datetime import timedelta
 from pydub import AudioSegment
-import soundfile as sf
 
 
 # cirrent paths for different OS
@@ -46,6 +45,7 @@ class Handler():
 
             # need refactoring
             sound = AudioSegment.from_file(file)
+            os.remove(file)
             sound = sound.set_channels(1)
             
             inx = file.rfind('.')

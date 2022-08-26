@@ -3,3 +3,4 @@ api/tools/models/
 api/tools/__pycache__/
 api/tempfiles/tgt/*.csv
 api/tempfiles/srs/*.wav
+datasets/
