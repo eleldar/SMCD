@@ -1,6 +1,7 @@
 venv/
+old_venv/
 api/tools/models/
 api/tools/__pycache__/
-api/tempfiles/tgt/*.csv
-api/tempfiles/srs/*.wav
+api/tempfiles/
 datasets/
+api/__pycache__/
