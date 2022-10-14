@@ -1,75 +1,25 @@
 #!/usr/bin/env python3
 import os
-import sys
 from vosk import Model, KaldiRecognizer, SetLogLevel
 from pathlib import Path
-import csv 
 import wave
-
-# cirrent paths for different OS
-drive, path_and_file = os.path.splitdrive(Path(__file__).absolute())
-path, file = os.path.split(path_and_file)
-curdir = os.path.join(drive, path)
-
-# import tools
-sys.path.append(curdir)
-from tools.postprocess import get_dicts_list 
+import json
 
 
-# models init
+curdir = Path(__file__).parent.resolve()
 models_path = os.path.join(curdir, 'models')
 SetLogLevel(-1) # keep init message
 models = {
     'ru': Model(os.path.join(models_path, 'ru')),
 }
 
+def get_words(dct_lst):
+    text = dct_lst.get('text') 
+    return text if text else ''
 
-def make_data_file(file_name, headers):
-    '''always make new file'''
-    with open(file_name, 'w', encoding='utf-8') as f:
-        f.write(f'{",".join(headers)}\n')
-
-
-def save_data(string, file_name, headers):
-    '''save to csv; need refactoring'''
-    dicts = get_dicts_list(string)
-    if dicts:
-        with open(file_name, 'a', newline='', encoding='utf-8') as f:
-            dictwriter_object = csv.DictWriter(f, fieldnames=headers)
-            for dct in dicts:
-                row = {
-                    "word": dct["word"],"start": dct["start"], 
-                    "end": dct["end"], "conf": dct["conf"]
-                }
-                dictwriter_object.writerow(row)
-
-
-def read_data(data_file):
-    '''read csv file and return list of dicts'''
-    dicts = []
-    try:
-        with open(data_file) as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                dicts.append(row)
-        return dicts
-    except FileNotFoundError:
-        return
-
-
+    
 def recognize(file_path, language='ru'):
     '''giperparameters, recognize, save, read and split text file'''
-    # recognize and save to csv file
-    drive, path_and_file = os.path.splitdrive(Path(__file__).absolute())
-    path, file = os.path.split(path_and_file)
-    curdir = os.path.join(drive, path)
-
-    data_file = os.path.splitext(os.path.basename(file_path))[0] + '.csv'
-    data_file = os.path.join(curdir, '..', 'tempfiles', 'tgt', data_file)
-
-    headers = ["word", "start", "end", "conf"]
-    make_data_file(data_file, headers)
-
     wf = wave.open(file_path, "rb")
     if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
         print ("Audio file must be WAV format mono PCM.")
@@ -77,24 +27,15 @@ def recognize(file_path, language='ru'):
     model = models[language]
     rec = KaldiRecognizer(model, wf.getframerate())
     rec.SetWords(True)
-    rec.SetPartialWords(True)
 
+    result = []
     while True:
         frame = wf.readframes(4000)
         if len(frame) == 0:
             break
         if rec.AcceptWaveform(frame):
-            output = rec.Result() 
-            save_data(output, data_file, headers)
-    output = rec.FinalResult()
-    save_data(output, data_file, headers)
-    os.remove(file_path)
-    return data_file 
-
-
-if __name__ == '__main__':
-    try:
-        file_path = sys.argv[1]
-        print(recognize(file_path))
-    except IndexError:
-        print('Not fount file mp4') 
+            output = json.loads(rec.Result())
+            result.append(get_words(output))
+    output = json.loads(rec.FinalResult())
+    result.append(get_words(output))
+    return " ".join(result) 
