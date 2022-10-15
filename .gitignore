@@ -12,3 +12,4 @@ api/tools/recasepunc/example.py
 api/tools/recasepunc/ru-test.txt
 api/tools/recasepunc/ru-test.txt.orig
 
+api/tools/vosk-recasepunc-ru-0.22.zip

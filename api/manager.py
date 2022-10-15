@@ -6,11 +6,12 @@ from pydub import AudioSegment
 import filetype as ft
 from handler import Handler
 from abc import abstractmethod, ABC
-
+import time
 
 
 from typing import Union, List, Dict
 
+start = time.time()
 
 class Transform(ABC):
     def __init__(
@@ -60,22 +61,25 @@ class Manager(Transform):
 
 
     def __call__(self, file):
-        return self.start(file)
+        try:
+            result = self.start(file)
+            return result
+        except Exception as e:
+            return f'Error: {e}'
 
 if __name__ == '__main__':
     manager = Manager()
     # file = '../datasets/Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3'
     files = [
-        '46747567547.mp3',
         'Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3',
-        'Zvonok_v_policiyu_-_Nashli_narkotiki_vnutri_muzhchiny_v_obraze_bobra_(Gybka.com).mp3',
-        'zvonok-deda-po-02-moyu-babushku-napominaet-ya-tebe-na-verevke-udavlyu....-ddd_(mp3IQ.net).mp3'
+        '1.mp3',
+        '2.mp3',
+        '3.mp3',
+        '4.mp3',
+        '5'
     ]
-#    for file in files[1]:
-#        result = manager(f'../datasets/{file}')
-#        print(result)
-#
 
-    result = manager(f'../datasets/{files[1]}')
+    result = manager(f'../datasets/{files[2]}')
+    print(f'time: {time.time() - start}')
     print(result)
 
