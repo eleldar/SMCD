@@ -5,11 +5,4 @@ api/tools/__pycache__/
 api/tempfiles/
 datasets/
 api/__pycache__/
-api/tools/recasepunc/README
-api/tools/recasepunc/__pycache__/
-api/tools/recasepunc/checkpoint
-api/tools/recasepunc/example.py
-api/tools/recasepunc/ru-test.txt
-api/tools/recasepunc/ru-test.txt.orig
-
 api/tools/vosk-recasepunc-ru-0.22.zip

@@ -46,7 +46,7 @@ class Manager(Transform):
                  'audio/x-wav': 'wav', 'audio/amr': 'amr', 'audio/x-aiff': 'aiff'}
         if type(file) == str: # and ft.guess(file):
             sound = AudioSegment.from_file(file).set_channels(1)
-            file_head = os.path.basename(file)[:os.path.basename(file).rfind('.')]
+            file_head = Path(file).stem
             file = os.path.join(self.dir_local_path, f'{file_head}_{prefix}_converted.wav')
             sound.export(file, format="wav")
         else:
@@ -54,7 +54,7 @@ class Manager(Transform):
             file.save(file_path)
             if ft.guess(file_path): 
                 sound = AudioSegment.from_file(file_path).set_channels(1)
-                file_head = file_path[:file_path.rfind('.')]
+                file_head = Path(file).stem
                 file = f'{file_head}_{prefix}_converted.wav'
                 sound.export(file, format="wav")
         return handler(file)
@@ -72,14 +72,14 @@ if __name__ == '__main__':
     # file = '../datasets/Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3'
     files = [
         'Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3',
-        '1.mp3',
+        '1',
         '2.mp3',
         '3.mp3',
         '4.mp3',
         '5'
     ]
 
-    result = manager(f'../datasets/{files[2]}')
+    result = manager(f'../datasets/{files[1]}')
     print(f'time: {time.time() - start}')
     print(result)
 

@@ -1,21 +1,39 @@
 import torch
 from transformers import pipeline
-classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli")
+from abc import abstractmethod, ABC
 
 
-def classificate(text):
-    candidate_labels = [
-        "преступление", "политика", "экономика", "спорт", "игры", "кино", "авто", "здоровье"
-    ]
-    output = classifier(text, candidate_labels, multi_label=False)
-    sequence = output['sequence'] 
-    labels   = output['labels'] 
-    scores   = output['scores']
-    print('>class:', scores)
-    max_value = max(scores)
-    max_type = labels[scores.index(max_value)]
-    return {
-        'crime': True if max_type == candidate_labels[0] else False,
-        'max_value': max_value,
-        'max_type': max_type
-    }
+class Detection(ABC):
+    @abstractmethod
+    def __call__(
+        self,
+        input: str
+    ) -> object:
+        raise NotImplementedError
+
+class Classificate(Detection):
+    '''Text classification'''
+    def __init__(
+        self,
+    ):
+        self.classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli")
+        self.candidate_labels = [
+            "преступление", "политика", "экономика", "спорт", 
+            "игры", "кино", "авто", "здоровье"
+        ]
+
+    def __handler(self, text):
+        output = self.classifier(text, self.candidate_labels, multi_label=False)
+        max_value = output['scores'][0]
+        max_type = output['labels'][0] 
+        return {
+            'crime': True if max_type == "преступление" else False,
+            'max_value': max_value,
+            'max_type': max_type
+        }
+
+    def __call__(self, text):
+        return self.__handler(text)
+     
+
+classificate = Classificate()
