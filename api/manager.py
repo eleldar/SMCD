@@ -13,13 +13,7 @@ from typing import Union, List, Dict
 
 start = time.time()
 
-class Transform(ABC):
-    def __init__(
-            self,
-            postprocessing_used: bool = False
-    ):
-        self.postprocessing_used = postprocessing_used
-
+class Interface(ABC):
     @abstractmethod
     def __call__(
             self,
@@ -27,10 +21,10 @@ class Transform(ABC):
     ) -> str:
         raise NotImplementedError
 
-class Manager(Transform):
+class Manager(Interface):
     def __init__(self):
         self.curdir = Path(__file__).parent.resolve()
-        self.dir_local_path = os.path.join(self.curdir, 'tempfiles')
+        self.dir_local_path = os.path.join(self.curdir, '..','input_data')
 
     def get_file_prefix(self):
         alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' 
@@ -41,9 +35,7 @@ class Manager(Transform):
     def start(self, file):
         handler = Handler()
         prefix = self.get_file_prefix()
-        mimes = {'audio/aac': 'aac', 'audio/midi': 'mid', 'audio/mpeg': 'mp3',
-                 'audio/mp4': 'm4a', 'audio/ogg': 'ogg', 'audio/x-flac': 'flac',
-                 'audio/x-wav': 'wav', 'audio/amr': 'amr', 'audio/x-aiff': 'aiff'}
+
         if type(file) == str: # and ft.guess(file):
             sound = AudioSegment.from_file(file).set_channels(1)
             file_head = Path(file).stem
@@ -52,11 +44,10 @@ class Manager(Transform):
         else:
             file_path = os.path.join(self.dir_local_path, file.filename)
             file.save(file_path)
-            if ft.guess(file_path): 
-                sound = AudioSegment.from_file(file_path).set_channels(1)
-                file_head = Path(file).stem
-                file = f'{file_head}_{prefix}_converted.wav'
-                sound.export(file, format="wav")
+            sound = AudioSegment.from_file(file_path).set_channels(1)
+            file_head = Path(file_path).stem
+            file = os.path.join(self.dir_local_path, f'{file_head}_{prefix}_converted.wav')
+            sound.export(file, format="wav")
         return handler(file)
 
 
@@ -67,19 +58,4 @@ class Manager(Transform):
         except Exception as e:
             return f'Error: {e}'
 
-if __name__ == '__main__':
-    manager = Manager()
-    # file = '../datasets/Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3'
-    files = [
-        'Zvonok_v_policiyu_-_Miner_(Gybka.com).mp3',
-        '1',
-        '2.mp3',
-        '3.mp3',
-        '4.mp3',
-        '5'
-    ]
-
-    result = manager(f'../datasets/{files[1]}')
-    print(f'time: {time.time() - start}')
-    print(result)
 
