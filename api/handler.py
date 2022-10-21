@@ -7,6 +7,11 @@ from tools.classification import classificate
 from pydub import AudioSegment
 from time import time
 
+
+# https://www.geeksforgeeks.org/python-speech-recognition-on-large-audio-files/
+# from pydub.silence import split_on_silence
+
+
 class Handler():
     def __init__(self):
         self.info = {}
