@@ -2,16 +2,20 @@ from random import choice, sample
 import os
 import sys
 from pathlib import Path
-from pydub import AudioSegment
-import filetype as ft
 from handler import Handler
 from abc import abstractmethod, ABC
 import time
+import platform
 
 
-from typing import Union, List, Dict
-
-start = time.time()
+from pydub import AudioSegment
+if platform.system() == 'Windows':
+    # https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/
+    curdir = Path(__file__).parent.resolve()
+    ffmpeg_path = os.path.join(os.path.dirname(curdir), 'win_venv', 'Lib', 'ffmpeg', 'bin')
+    AudioSegment.converter = os.path.join(ffmpeg_path, 'ffmpeg.exe')
+    AudioSegment.ffmpeg = os.path.join(ffmpeg_path, 'ffmpeg.exe')
+    AudioSegment.ffprobe = os.path.join(ffmpeg_path, 'ffprobe.exe')
 
 class Interface(ABC):
     @abstractmethod
@@ -24,7 +28,9 @@ class Interface(ABC):
 class Manager(Interface):
     def __init__(self):
         self.curdir = Path(__file__).parent.resolve()
-        self.dir_local_path = os.path.join(self.curdir, '..','input_data')
+        self.dir_local_path = os.path.join(os.path.dirname(self.curdir), 'input_data')
+        self.info = {}
+
 
     def get_file_prefix(self):
         alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' 
@@ -43,12 +49,23 @@ class Manager(Interface):
             sound.export(file, format="wav")
         else:
             file_path = os.path.join(self.dir_local_path, file.filename)
+            start_save_file = time.time()
             file.save(file_path)
-            sound = AudioSegment.from_file(file_path).set_channels(1)
-            file_head = Path(file_path).stem
-            file = os.path.join(self.dir_local_path, f'{file_head}_{prefix}_converted.wav')
-            sound.export(file, format="wav")
-        return handler(file)
+            end_save_file = time.time()
+            self.info['save_file_time'] = end_save_file - start_save_file
+
+            try:
+                start_conv_file = time.time()
+                sound = AudioSegment.from_file(file_path).set_channels(1)
+                file_head = Path(file_path).stem
+                file = os.path.join(self.dir_local_path, f'{file_head}_{prefix}_converted.wav')
+                sound.export(file, format="wav")
+                end_conv_file = time.time()
+                self.info['save_convert_time'] = end_conv_file - start_conv_file
+            except Exception as e:
+                print(e)
+        self.info.update(handler(file))
+        return self.info
 
 
     def __call__(self, file):

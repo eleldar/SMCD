@@ -29,7 +29,18 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             response = manager(file)
-            print(response)
+            print(f'save_file_time: {response.get("save_file_time")}')
+            print(f'save_convert_time: {response.get("save_convert_time")}')
+            print(f'recognition_time: {response.get("recognition_time")}')
+            print(f'classification_time: {response.get("classification_time")}')
+            print(f'punctuation_time: {response.get("punctuation_time")}')
+
+            print(f'crime: {response["class"].get("crime")}')
+            print(f'max_value: {response["class"].get("max_value")}')
+            print(f'max_type: {response["class"].get("max_type")}')
+
+            print(f'text: {response.get("text")}')
+
 #            return redirect(url_for('download_file', name=filename))
         return '''
         <!doctype html>
@@ -56,5 +67,5 @@ if __name__ == '__main__':
     app.run(
 #        host = args.host,
 #        port = args.port,
-        debug = False
+        debug = True
     )

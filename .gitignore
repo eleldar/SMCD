@@ -6,3 +6,6 @@ api/tempfiles/
 datasets/
 api/__pycache__/
 api/tools/vosk-recasepunc-ru-0.22.zip
+.idea/
+win_venv/
+input_data/
