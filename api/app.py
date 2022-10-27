@@ -35,14 +35,15 @@ def upload_file():
             print(f'classification_time: {response.get("classification_time")}')
             print(f'punctuation_time: {response.get("punctuation_time")}')
 
-            print(f'crime: {response["class"].get("crime")}')
+            # print(f'crime: {response["class"].get("crime")}')
             print(f'max_value: {response["class"].get("max_value")}')
             print(f'max_type: {response["class"].get("max_type")}')
-
-            print(f'text: {response.get("text")}')
+            # print(f'text: {response.get("text")}')
 
 #            return redirect(url_for('download_file', name=filename))
-        return render_template('index.html')
+
+        # https://bootstrap-flask.readthedocs.io/en/stable/
+        return render_template('index.html', result=response)
 
     return render_template('index.html')
 

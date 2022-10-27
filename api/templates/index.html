@@ -1,7 +1,20 @@
 <!doctype html>
-<title>Upload new File</title>
-<h1>Upload new File</h1>
+<html lang="ru">
+<title>Обнаружение признаков преступления</title>
+<h1>Обнаружение признаков преступления</h1>
+<br>
+{% if result %}
+  <p>
+      {{ ('Содержатся признаки преступления!' if result["class"].get("crime")
+          else 'Признаков преступления не обнаружено!')
+      }}
+  </p>
+  <p>Текст разговора: {{ result.get('text') }}</p>
+{% else %}
+  <h3>Для начала выберите файл и нажмите "Загрузить"</h3>
+{% endif %}
+
 <form method=post enctype=multipart/form-data>
     <input type=file name=file>
-    <input type=submit value=Upload>
+    <input type=submit value=Загрузить файл>
 </form>
